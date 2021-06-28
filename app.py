@@ -5,6 +5,9 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate, MigrateCommand
 from flask_script import Manager
 from flask_uploads import UploadSet, configure_uploads, IMAGES
+from flask_wtf import FlaskForm
+from wtforms import StringField, IntegerField, TextAreaField
+from flask_wtf.file import FileField, FileAllowed
 import sqlite3
 
 app = Flask(__name__)
@@ -29,31 +32,37 @@ manager.add_command('db', MigrateCommand)
 data_base = sqlite3.connect('trendy.db')
 
 
-class Jogo(db.Model):
+class Product(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    nome = db.Column(db.String(50), unique=True)
-    valor = db.Column(db.Integer)
-    estoque = db.Column(db.Integer)
-    descricao = db.Column(db.String(500))
-    imagem = db.Column(db.String(150))
+    name = db.Column(db.String(50), unique=True)
+    price = db.Column(db.Integer) #in cents
+    stock = db.Column(db.Integer)
+    description = db.Column(db.String(500))
+    image = db.Column(db.String(100))
 
 
-# class Desenvolvedora(db.Model):
-#     id = db.Column(db.Integer, primary_key=True)
-#     nome = db.Column(db.String(50), unique=True)
-#     valor = db.Column(db.Integer)
-#     estoque = db.Column(db.Integer)
-#     descricao = db.Column(db.String(500))
-#     imagem = db.Column(db.String(150))
-#
-#
-# class Publicadora(db.Model):po
-#     id = db.Column(db.Integer, primary_key=True)
-#     nome = db.Column(db.String(50), unique=True)
-#     valor = db.Column(db.Integer)
-#     estoque = db.Column(db.Integer)
-#     descricao = db.Column(db.String(500))
-#     imagem = db.Column(db.String(150))
+
+class AddProduct(FlaskForm):
+    name = StringField('Name')
+    price = IntegerField('Price')
+    stock = IntegerField('Stock')
+    description = TextAreaField('Description')
+    image = FileField('Image', validators=[FileAllowed(IMAGES, 'Only images are accepted.')])
+
+
+class AddPublisher(FlaskForm):
+    name = StringField('Name')
+    price = IntegerField('Price')
+    stock = IntegerField('Stock')
+    description = TextAreaField('Description')
+    image = FileField('Image', validators=[FileAllowed(IMAGES, 'Only images are accepted.')])
+
+class AddDeveloper(FlaskForm):
+    name = StringField('Name')
+    price = IntegerField('Price')
+    stock = IntegerField('Stock')
+    description = TextAreaField('Description')
+    image = FileField('Image', validators=[FileAllowed(IMAGES, 'Only images are accepted.')])
 
 
 @app.route('/')
@@ -81,9 +90,22 @@ def admin():
     return render_template('admin/index.html', admin=True)
 
 
-@app.route('/admin/add')
+@app.route('/admin/add',methods=['GET', 'POST'])
 def add():
-    return render_template('admin/add-product.html', admin=True)
+    form = AddProduct()
+
+    if form.validate_on_submit():
+        image_url = photos.url(photos.save(form.image.data))
+
+        new_product = Product(name=form.name.data, price=form.price.data, stock=form.stock.data,
+                              description=form.description.data, image=image_url)
+
+        db.session.add(new_product)
+        db.session.commit()
+
+        return redirect(url_for('admin'))
+
+    return render_template('admin/add-product.html', admin=True, form=form)
 
 
 @app.route('/admin/order')
