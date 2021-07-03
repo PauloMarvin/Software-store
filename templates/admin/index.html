@@ -15,9 +15,9 @@
 		<ul class="summary">
 			<li class="">Pending Orders <span class="badge">5</span></li>
 			<li class="">Completed Orders <span class="badge">3</span></li>
-			<li class="">Products In Stock <span class="badge">7</span></li>
-			<li class="">Products Out of Stock <span class="badge">11</span></li>
-			<li class="">Total Products <span class="badge">90</span></li>
+			<li class="">Products In Stock <span class="badge">{{ products_in_stock }}</span></li>
+			<li class="">Products Out of Stock <span class="badge">{{ products|length - products_in_stock }}</span></li>
+			<li class="">Total Products <span class="badge">{{ products|length }}</span></li>
 		</ul>
 	</div>
 </div>
@@ -95,36 +95,15 @@
 						</tr>
 					</thead>
 					<tbody>
-						<tr>
-							<td>1</td>
-							<td>Classic Blouse</td>
-							<td>&dollar;35.99</td>
-							<td>45 units</td>
+                        {%for product in products %}
+
+                        <tr>
+							<td>{{ product.id }}</td>
+							<td>{{ product.name }}</td>
+							<td>&dollar;{{ product.price / 100 }}</td>
+							<td>{{ product.stock }} units</td>
 						</tr>
-						<tr>
-							<td>2</td>
-							<td>Printed Dress</td>
-							<td>&dollar;23.99</td>
-							<td>25 units</td>
-						</tr>
-						<tr>
-							<td>3</td>
-							<td>Summer Gown</td>
-							<td>&dollar;45.99</td>
-							<td>33 units</td>
-						</tr>
-						<tr>
-							<td>4</td>
-							<td>Summer Printed Dress</td>
-							<td>&dollar;35.99</td>
-							<td>11 units</td>
-						</tr>
-						<tr>
-							<td>5</td>
-							<td>Faded Shorts</td>
-							<td>&dollar;15.99</td>
-							<td>3 units</td>
-						</tr>
+                        {% endfor %}
 					</tbody>
 				</table>
 			</div>

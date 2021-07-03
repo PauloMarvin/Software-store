@@ -30,13 +30,13 @@
         <div class="collapse navbar-collapse navbar-ex1-collapse">
             <ul class="nav navbar-nav">
                 <li class="active">
-                    <a href="./"><i class="glyphicon glyphicon-dashboard"></i> Admin Dashboard</a>
+                    <a href="{{url_for('admin') }}"><i class="glyphicon glyphicon-dashboard"></i> Admin Dashboard</a>
                 </li>
                 <li>
-                    <a href="./add-product.html"><i class="glyphicon glyphicon-plus-sign"></i> Add Product</a>
+                    <a href=".{{ url_for('add')}}"><i class="glyphicon glyphicon-plus-sign"></i> Add Product</a>
                 </li>
                 <li>
-                    <a href="../"><i class="glyphicon glyphicon-chevron-left"></i> Back To Front</a>
+                    <a href="{{ url_for('index')}}"><i class="glyphicon glyphicon-chevron-left"></i> Back To Front</a>
                 </li>
             </ul>
         </div><!-- /.navbar-collapse -->
@@ -54,6 +54,16 @@
                 <span class="icon-bar"></span>
             </button>
             <a class="navbar-brand" href="./">Jogos</a>
+        </div>
+
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="{{ url_for('admin')}}">Admin</a>
         </div>
 
         <!-- Collect the nav links, forms, and other content for toggling -->

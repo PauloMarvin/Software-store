@@ -14,3 +14,4 @@ python-editor==1.0.3
 six==1.11.0
 SQLAlchemy==1.1.15
 Werkzeug==0.12.2
+WTForms~=2.3.3

@@ -87,8 +87,9 @@ def checkout():
 
 @app.route('/admin')
 def admin():
-    return render_template('admin/index.html', admin=True)
-
+    products = Product.query.all()
+    products_in_stock = Product.query.filter(Product.stock > 0).count()
+    return render_template('admin/index.html', admin=True, products=products,products_in_stock= products_in_stock)
 
 @app.route('/admin/add',methods=['GET', 'POST'])
 def add():
@@ -114,4 +115,4 @@ def order():
 
 
 if __name__ == '__main__':
-    manager.run()
+    manager.run(debug=True)
