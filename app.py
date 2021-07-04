@@ -31,6 +31,9 @@ manager.add_command('db', MigrateCommand)
 
 data_base = sqlite3.connect('trendy.db')
 
+class AddToCart(FlaskForm):
+    quantity = IntegerField('Quantity')
+
 
 class Product(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -67,12 +70,21 @@ class AddDeveloper(FlaskForm):
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    products = Product.query.all()
+    return render_template('index.html',products = products)
 
 
-@app.route('/product')
-def product():
-    return render_template('view-product.html')
+@app.route('/product/<id>')
+def product(id):
+
+    product = Product.query.filter_by(id = id).first()
+    form = AddToCart()
+    return render_template('view-product.html', product = product, form = form)
+
+
+@app.route('/add-to-cart')
+def add_to_cart():
+    return redirect(url_for('index'))
 
 
 @app.route('/cart')
@@ -115,4 +127,4 @@ def order():
 
 
 if __name__ == '__main__':
-    manager.run(debug=True)
+    app.run(debug=True)
