@@ -1,12 +1,12 @@
 from enum import unique
 
-from flask import Flask, render_template, redirect, url_for
+from flask import Flask, render_template, redirect, url_for, session
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate, MigrateCommand
 from flask_script import Manager
 from flask_uploads import UploadSet, configure_uploads, IMAGES
 from flask_wtf import FlaskForm
-from wtforms import StringField, IntegerField, TextAreaField
+from wtforms import StringField, IntegerField, TextAreaField, HiddenField
 from flask_wtf.file import FileField, FileAllowed
 import sqlite3
 
@@ -31,18 +31,19 @@ manager.add_command('db', MigrateCommand)
 
 data_base = sqlite3.connect('trendy.db')
 
+
 class AddToCart(FlaskForm):
     quantity = IntegerField('Quantity')
+    id = HiddenField('ID')
 
 
 class Product(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), unique=True)
-    price = db.Column(db.Integer) #in cents
+    price = db.Column(db.Integer)  # in cents
     stock = db.Column(db.Integer)
     description = db.Column(db.String(500))
     image = db.Column(db.String(100))
-
 
 
 class AddProduct(FlaskForm):
@@ -60,6 +61,7 @@ class AddPublisher(FlaskForm):
     description = TextAreaField('Description')
     image = FileField('Image', validators=[FileAllowed(IMAGES, 'Only images are accepted.')])
 
+
 class AddDeveloper(FlaskForm):
     name = StringField('Name')
     price = IntegerField('Price')
@@ -71,24 +73,33 @@ class AddDeveloper(FlaskForm):
 @app.route('/')
 def index():
     products = Product.query.all()
-    return render_template('index.html',products = products)
+    return render_template('index.html', products=products)
 
 
 @app.route('/product/<id>')
 def product(id):
-
-    product = Product.query.filter_by(id = id).first()
+    product = Product.query.filter_by(id=id).first()
     form = AddToCart()
-    return render_template('view-product.html', product = product, form = form)
+    return render_template('view-product.html', product=product, form=form)
 
 
-@app.route('/add-to-cart')
+@app.route('/add-to-cart', methods=['POST'])
 def add_to_cart():
+    if 'cart' not in session:
+        session['cart'] = []
+
+    form = AddToCart()
+
+    if form.validate_on_submit():
+        session['cart'].append({'id': form.id.data, 'quantity': form.quantity.data})
+        session.modified = True
+
     return redirect(url_for('index'))
 
 
 @app.route('/cart')
 def cart():
+    print(session['cart'])
     return render_template('cart.html')
 
 
@@ -101,9 +112,10 @@ def checkout():
 def admin():
     products = Product.query.all()
     products_in_stock = Product.query.filter(Product.stock > 0).count()
-    return render_template('admin/index.html', admin=True, products=products,products_in_stock= products_in_stock)
+    return render_template('admin/index.html', admin=True, products=products, products_in_stock=products_in_stock)
 
-@app.route('/admin/add',methods=['GET', 'POST'])
+
+@app.route('/admin/add', methods=['GET', 'POST'])
 def add():
     form = AddProduct()
 

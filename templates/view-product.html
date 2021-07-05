@@ -28,20 +28,19 @@
 			<div class="panel-heading">
 				<h3 class="panel-title">Product Details</h3>
 			</div>
-			<div class="panel-body">
-				<h3>{{product.name}} &nbsp;
-					{%if product.stock > 0 %}&nbsp;
-					<small>(In Stock)</small></h3>
-					{% else %}
-					<small>(Out of Stock)</small>
-					{% endif %}
-				</h3>
+			<h3>{{product.name}} &nbsp;
+				{%if product.stock > 0 %}&nbsp;
+				<small>(In Stock)</small></h3>
+			{% else %}
+			<small>(Out of Stock)</small>
+			{% endif %}
+			</h3>
 
-				<h4>&dollar;{{product.price / 100}}</h4>
-				<hr />
-				{{product.description}}
-				<hr />
-				<form action = "{{url_for('add_to_cart')}}">
+			<h4>&dollar;{{product.price / 100}}</h4>
+			<hr />
+			{{product.description}}
+			<hr />
+			<form action = "{{url_for('add_to_cart')}}" method="POST">
 				{%if product.stock > 0 %}&nbsp;
 				<div class="row">
 					<div class="col-lg-4">
@@ -52,21 +51,26 @@
 							<div class="col-lg-12">
 								{{form.csrf_token}}
 								{{form.quantity(class = 'form-control' ,type ='number',min=1,max=product.stock,step=1,value = 1)}}
+								{{form.id(value=product.id)}}
 							</div>
 						</div>
 					</div>
 				</div>
-				</form>
-			</div>
-			{% endif %}
+				{% endif %}
+
 			<div class="panel-footer">
 				{% if product.stock > 0  %}
 				<button type="submit" class="btn btn-primary">
 					<i class="glyphicon glyphicon-shopping-cart"></i> Add To Cart
 				</button>
+
 				{% endif %}
+
 			</div>
+			</form>
+
 		</div>
+
 
 		<div role="tabpanel">
 			<!-- Nav tabs -->
@@ -78,7 +82,7 @@
 					<a href="#shipping" aria-controls="shipping" role="tab" data-toggle="tab">Shipping Details</a>
 				</li>
 			</ul>
-		
+
 			<!-- Tab panes -->
 			<div class="tab-content">
 				<div role="tabpanel" class="tab-pane active" id="description">
