@@ -71,7 +71,7 @@
 							<i class="glyphicon glyphicon-eye-open"></i> View
 						</a>
 						{% if product.stock > 0  %}
-						<a href="#" class="btn btn-default btn-sm">
+						<a href="{{url_for('quick_add',id = product.id)}}" class="btn btn-default btn-sm">
 							<i class="glyphicon glyphicon-shopping-cart"></i> Add To Cart
 						{% endif %}
 						</a>

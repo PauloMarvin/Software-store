@@ -83,7 +83,18 @@ def product(id):
     return render_template('view-product.html', product=product, form=form)
 
 
-@app.route('/add-to-cart', methods=['POST'])
+@app.route('/quick-add/<id>')
+def quick_add(id):
+    if 'cart' not in session:
+        session['cart'] = []
+
+    session['cart'].append({'id': id, 'quantity': 1})
+    session.modified = True
+
+    return redirect(url_for('index'))
+
+
+@app.route('/add-to-cart', methods=['GET', 'POST'])
 def add_to_cart():
     if 'cart' not in session:
         session['cart'] = []
@@ -99,8 +110,18 @@ def add_to_cart():
 
 @app.route('/cart')
 def cart():
-    print(session['cart'])
-    return render_template('cart.html')
+    products = []
+
+    for item in session['cart']:
+        product = Product.query.filter_by(id=item['id']).first()
+
+        quantity = int(item['quantity'])
+        total = quantity * product.price
+        products.append({'id': product.id, 'name': product.name, 'price': product.price,
+                         'image': product.image, 'quantity': quantity, 'total': total})
+
+
+    return render_template('cart.html',products=products)
 
 
 @app.route('/checkout')
