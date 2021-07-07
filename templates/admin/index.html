@@ -14,7 +14,6 @@
 	<div class="col-lg-12">
 		<ul class="summary">
 			<li class="">Pending Orders <span class="badge">5</span></li>
-			<li class="">Completed Orders <span class="badge">3</span></li>
 			<li class="">Products In Stock <span class="badge">{{ products_in_stock }}</span></li>
 			<li class="">Products Out of Stock <span class="badge">{{ products|length - products_in_stock }}</span></li>
 			<li class="">Total Products <span class="badge">{{ products|length }}</span></li>
@@ -39,40 +38,16 @@
 					</thead>
 					<tbody>
 						<tr>
-							<td>1</td>
-							<td><a href="./view-order.html">EF45AVH</a></td>
-							<td>Peter Holland</td>
+                            {% for order in orders %}
+							<td>{{ order.id }}</td>
+							<td><a href="./view-order.html">{{ order.reference }}</a></td>
+							<td>{{ order.first_name + '' + order.last_name}}</td>
 							<td>&dollar;50.99</td>
-							<td><span class="badge">Awaiting Payment</span></td>
+							<td><span class="badge">{{ order.status }}</span></td>
 						</tr>
 						<tr>
-							<td>2</td>
-							<td><a href="./view-order.html">ZSD03DDC</a></td>
-							<td>Kyle Jenner</td>
-							<td>&dollar;43.99</td>
-							<td><span class="badge">Awaiting Payment</span></td>
-						</tr>
-						<tr>
-							<td>3</td>
-							<td><a href="./view-order.html">KDJDPE2</a></td>
-							<td>Daniel Monroe</td>
-							<td>&dollar;29.99</td>
-							<td><span class="badge">Awaiting Payment</span></td>
-						</tr>
-						<tr>
-							<td>4</td>
-							<td><a href="./view-order.html">AWDADD22</a></td>
-							<td>Molly Anderson</td>
-							<td>&dollar;22.99</td>
-							<td><span class="badge">Awaiting Payment</span></td>
-						</tr>
-						<tr>
-							<td>5</td>
-							<td><a href="./view-order.html">AEEACCC</a></td>
-							<td>James Cane</td>
-							<td>&dollar;100.00</td>
-							<td><span class="badge">Awaiting Payment</span></td>
-						</tr>
+                            {% endfor %}
+
 					</tbody>
 				</table>
 			</div>

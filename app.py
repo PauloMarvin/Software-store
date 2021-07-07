@@ -6,6 +6,7 @@ from flask_uploads import UploadSet, configure_uploads, IMAGES
 from flask_wtf import FlaskForm
 from wtforms import StringField, IntegerField, TextAreaField, HiddenField, SelectField
 from flask_wtf.file import FileField, FileAllowed
+import random
 
 app = Flask(__name__)
 
@@ -87,6 +88,7 @@ def handle_cart():
     products = []
     grand_total = 0
     index = 0
+    quantity_total = 0
 
     for item in session['cart']:
         product = Product.query.filter_by(id=item['id']).first()
@@ -95,13 +97,15 @@ def handle_cart():
         total = quantity * product.price
         grand_total += total
 
+        quantity_total += quantity
+
         products.append({'id': product.id, 'name': product.name, 'price': product.price, 'image': product.image,
                          'quantity': quantity, 'total': total, 'index': index})
         index += 1
 
     grand_total_plus_shipping = grand_total + 1000
 
-    return products, grand_total, grand_total_plus_shipping
+    return products, grand_total, grand_total_plus_shipping,quantity_total
 
 
 @app.route('/')
@@ -147,10 +151,10 @@ def add_to_cart():
 
 @app.route('/cart')
 def cart():
-    products, grand_total, grand_total_plus_shipping = handle_cart()
+    products, grand_total, grand_total_plus_shipping,quantity_total = handle_cart()
 
     return render_template('cart.html', products=products, grand_total=grand_total,
-                           grand_total_plus_shipping=grand_total_plus_shipping)
+                           grand_total_plus_shipping=grand_total_plus_shipping,quantity_total=quantity_total)
 
 
 @app.route('/remove-from-cart/<index>')
@@ -163,13 +167,13 @@ def remove_from_cart(index):
 @app.route('/checkout', methods=['GET', 'POST'])
 def checkout():
     form = Checkout()
-
+    products, grand_total, grand_total_plus_shipping, quantity_total = handle_cart()
     if form.validate_on_submit():
-        products, grand_total, grand_total_plus_shipping = handle_cart()
+
 
         order = Order()
         form.populate_obj(order)
-        order.reference = 'ABCDE'
+        order.reference = ''.join([random.choice('ABCDE') for _ in range(5)])
         order.status = 'PENDING'
 
         for product in products:
@@ -184,7 +188,7 @@ def checkout():
 
         return redirect(url_for('index'))
 
-    return render_template('checkout.html', form=form)
+    return render_template('checkout.html', form=form, grand_total=grand_total, grand_total_plus_shipping = grand_total_plus_shipping,quantity_total=quantity_total)
 
 
 @app.route('/admin')
@@ -192,7 +196,9 @@ def admin():
     products = Product.query.all()
     products_in_stock = Product.query.filter(Product.stock > 0).count()
 
-    return render_template('admin/index.html', admin=True, products=products, products_in_stock=products_in_stock)
+    orders = Order.query.all()
+
+    return render_template('admin/index.html', admin=True, products=products, products_in_stock=products_in_stock,orders= orders)
 
 
 @app.route('/admin/add', methods=['GET', 'POST'])

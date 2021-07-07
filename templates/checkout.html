@@ -99,15 +99,14 @@
 			<ul class="list-group">
 				<li class="list-group-item">
 					<p>
-						3 Items <strong class="pull-right">&dollar;122.97</strong>
+						{{ quantity_total }} items <strong class="pull-right">&dollar;{{ grand_total / 100 }}</strong>
 					</p>
 					<p>
 						24hr Shipping <strong class="pull-right">&dollar;10</strong>
 					</p>
 				</li>
 				<li class="list-group-item">
-					<p>Total <strong class="pull-right">&dollar;132.97</strong></p>
-					<p>Taxes <strong class="pull-right">&dollar;0.00</strong></p>
+					<p>Total <strong class="pull-right">&dollar;{{ grand_total_plus_shipping / 100 }}</strong></p>
 				</li>
 			</ul>
 		</div>
